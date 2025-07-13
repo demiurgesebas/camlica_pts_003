@@ -1,0 +1,194 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Kullanıcı kimlik doğrulama kontrolü
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Kullanıcı rolü kontrolü
+    function getUserRole() {
+      return resource.data.role;
+    }
+    
+    // Süper admin kontrolü
+    function isSuperAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.role == 'super_admin';
+    }
+    
+    // Admin kontrolü (super_admin + admin)
+    function isAdmin() {
+      return isAuthenticated() && 
+             (request.auth.token.role == 'super_admin' || 
+              request.auth.token.role == 'admin');
+    }
+    
+    // Personel kontrolü (tüm roller)
+    function isPersonnel() {
+      return isAuthenticated() && 
+             (request.auth.token.role == 'super_admin' || 
+              request.auth.token.role == 'admin' || 
+              request.auth.token.role == 'personnel');
+    }
+    
+    // Kendi verisini mi kontrolü
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // USERS Collection - Kullanıcı hesapları
+    match /users/{userId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Sadece super admin
+      allow create, update, delete: if isSuperAdmin();
+      
+      // Kendi profilini güncelleme
+      allow update: if isOwner(userId) && 
+                    !('role' in request.resource.data) && 
+                    !('permissions' in request.resource.data);
+    }
+    
+    // PERSONNEL Collection - Personel bilgileri
+    match /personnel/{personnelId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Admin+ yetkisi
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // BRANCHES Collection - Şubeler
+    match /branches/{branchId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Admin+ yetkisi
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // DEPARTMENTS Collection - Departmanlar
+    match /departments/{departmentId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Admin+ yetkisi
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // TEAMS Collection - Ekipler
+    match /teams/{teamId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Admin+ yetkisi
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // SHIFTS Collection - Vardiyalar
+    match /shifts/{shiftId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Admin+ yetkisi
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // SHIFT_ASSIGNMENTS Collection - Vardiya atamaları
+    match /shiftAssignments/{assignmentId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Admin+ yetkisi
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // LEAVE_REQUESTS Collection - İzin talepleri
+    match /leaveRequests/{requestId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Kendi izin talebini oluşturma
+      allow create: if isAuthenticated() && 
+                    request.auth.uid == request.resource.data.personnelId;
+      
+      // Güncelleme: Admin+ yetkisi
+      allow update, delete: if isAdmin();
+    }
+    
+    // QR_CODES Collection - QR kodları
+    match /qrCodes/{codeId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Admin+ yetkisi
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // QR_SCREENS Collection - QR ekranları
+    match /qrScreens/{screenId} {
+      // Okuma: Herkese açık (QR ekranlar için)
+      allow read: if true;
+      
+      // Yazma: Admin+ yetkisi
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // ATTENDANCE_RECORDS Collection - Devamsızlık kayıtları
+    match /attendanceRecords/{recordId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Admin+ yetkisi (QR okuma için özel durum)
+      allow create, update, delete: if isAdmin();
+      
+      // QR kod ile check-in/out
+      allow create: if isAuthenticated();
+    }
+    
+    // NOTIFICATIONS Collection - Bildirimler
+    match /notifications/{notificationId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Admin+ yetkisi
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // SYSTEM_SETTINGS Collection - Sistem ayarları
+    match /system_settings/{settingId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Sadece super admin
+      allow create, update, delete: if isSuperAdmin();
+    }
+    
+    // REPORTS Collection - Raporlar (geçici)
+    match /reports/{reportId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Admin+ yetkisi
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // TASKS Collection - Görevler
+    match /tasks/{taskId} {
+      // Okuma: Tüm authenticated kullanıcılar
+      allow read: if isAuthenticated();
+      
+      // Yazma: Admin+ yetkisi
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Diğer tüm collections için varsayılan kural
+    match /{document=**} {
+      // Varsayılan olarak erişim yok
+      allow read, write: if false;
+    }
+  }
+}

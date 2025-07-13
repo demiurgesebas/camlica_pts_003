@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+  
+  /* Custom colors for personnel tracking system */
+  --primary-blue: hsl(207, 90%, 54%);
+  --primary-blue-dark: hsl(207, 90%, 45%);
+  --success-green: hsl(122, 39%, 49%);
+  --success-green-dark: hsl(122, 39%, 39%);
+  --warning-orange: hsl(36, 100%, 50%);
+  --warning-orange-dark: hsl(36, 100%, 40%);
+  --error-red: hsl(4, 90%, 58%);
+  --error-red-dark: hsl(4, 90%, 48%);
+  --neutral-bg: hsl(0, 0%, 98%);
+}
+
+.dark {
+  --background: hsl(240, 10%, 3.9%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 3.7%, 15.9%);
+  --muted-foreground: hsl(240, 5%, 64.9%);
+  --popover: hsl(240, 10%, 3.9%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 10%, 3.9%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 3.7%, 15.9%);
+  --input: hsl(240, 3.7%, 15.9%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(240, 3.7%, 15.9%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(240, 3.7%, 15.9%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(240, 4.9%, 83.9%);
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-feature-settings: 'liga' 1, 'calt' 1;
+    text-rendering: optimizeLegibility;
+  }
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .sidebar-link {
+    @apply flex items-center space-x-3 p-3 rounded-lg transition-all text-gray-700 hover:bg-blue-50 hover:border-r-4 hover:border-primary;
+  }
+  
+  .sidebar-link.active {
+    @apply bg-primary text-white border-r-4 border-blue-800;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-200 hover:transform hover:-translate-y-1 hover:shadow-lg;
+  }
+  
+  .stat-card {
+    @apply bg-gradient-to-br from-blue-600 to-blue-700;
+  }
+  
+  .stat-card-secondary {
+    @apply bg-gradient-to-br from-green-500 to-green-600;
+  }
+  
+  .stat-card-warning {
+    @apply bg-gradient-to-br from-orange-500 to-orange-600;
+  }
+  
+  .stat-card-error {
+    @apply bg-gradient-to-br from-red-500 to-red-600;
+  }
+}

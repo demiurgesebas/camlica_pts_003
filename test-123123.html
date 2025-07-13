@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test QR Display 123123</title>
+</head>
+<body>
+    <h1>Test QR Display Screen 123123</h1>
+    <p>Testing connection to screen 123123</p>
+    <div id="result"></div>
+    
+    <script>
+        async function testScreen() {
+            const result = document.getElementById('result');
+            
+            try {
+                // Test screen endpoint
+                const response = await fetch('/api/qr-screens/123123');
+                const data = await response.json();
+                
+                result.innerHTML = `
+                    <h2>Screen Data:</h2>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                    <p>Status: ${response.status}</p>
+                `;
+                
+                // Test QR code endpoint
+                const qrResponse = await fetch('/api/qr-codes/screen/123123');
+                const qrData = await qrResponse.json();
+                
+                result.innerHTML += `
+                    <h2>QR Code Data:</h2>
+                    <pre>${JSON.stringify(qrData, null, 2)}</pre>
+                    <p>Status: ${qrResponse.status}</p>
+                `;
+                
+            } catch (error) {
+                result.innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+        
+        testScreen();
+    </script>
+</body>
+</html>
